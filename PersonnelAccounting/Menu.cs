@@ -12,19 +12,27 @@ public class MainMenu
     const string FilterEmployees = "filter";
     const string Exit = "exit";
 
-    private string[] _selections;
-    private string _lastUserInput = null;
+    private List<string> _selections;
+    private Database _database;
+    private InputHandler _inputHandler;
+    private EmployeeBuilder _employeeBuilder;
 
-    public MainMenu()
+    public MainMenu(Database database, InputHandler inputHandler, EmployeeBuilder employeeBuilder)
     {
-        _selections = new[]
-        {
-            AddEmployee, EditEmployee, DeleteEmployee, 
-            ShowAllEmployees, SearchEmployee, FilterEmployees, Exit
-        };
+        _selections.Add(AddEmployee);
+        _selections.Add(EditEmployee);
+        _selections.Add(DeleteEmployee);
+        _selections.Add(ShowAllEmployees);
+        _selections.Add(SearchEmployee);
+        _selections.Add(FilterEmployees);
+        _selections.Add(Exit);
+
+        _database = database;
+        _inputHandler = inputHandler;
+        _employeeBuilder = employeeBuilder;
     }
 
-    public void ShowMainMenu()
+    public void ShowMain()
     {
         Console.Write($"Введите команду для продолжения" +
                       $"\n{AddEmployee} - Добавить нового сотрудника" +
@@ -33,15 +41,23 @@ public class MainMenu
                       $"\n{ShowAllEmployees} - Показать всех текущих сотрудников" +
                       $"\n{SearchEmployee} - Поиск сотрудника по критериям" +
                       $"\n{FilterEmployees} - Отфильтровать сотрудников по критериям" +
-                      $"\n{Exit} - Завершить работу" +
-                      $"\nВвод пользователя: ");
+                      $"\n{Exit} - Завершить работу");
     }
-
-    public void ShowNextSelection(Database database, InputHandler inputHandler, ref bool isWorking)
+    
+    public void ShowNextSelection(ref bool isWorking)
     {
-        switch (_lastUserInput)
+        Console.WriteLine("Введите команду:");
+        string userInput = Console.ReadLine();
+
+        if (TryChoseNextSelection(userInput))
+        {
+            
+        }
+        
+        switch (userInput)
         {
             case AddEmployee:
+                _database.AddNewEmployee(_employeeBuilder.Create());
                 break;
             
             case EditEmployee: 
@@ -51,6 +67,7 @@ public class MainMenu
                 break;
             
             case ShowAllEmployees:
+                ShowEmployers();
                 break;
             
             case SearchEmployee:
@@ -64,23 +81,31 @@ public class MainMenu
                 break;
             
             default:
-                inputHandler.IncorrectInput();
+                _inputHandler.IncorrectInput();
                 break;
         }
     }
 
-    public bool TryChoseNextSelection(InputHandler inputHandler, string userInput)
+    public bool TryChoseNextSelection(string userInput)
     {
-        _lastUserInput = userInput;
-        
         foreach (var selection in _selections)
         {
             if (selection == userInput)
                 return true;
         }
         
-        inputHandler.IncorrectInput();
-        
+        _inputHandler.IncorrectInput();
         return false;
+    }
+
+    private void ShowEmployers()
+    {
+        List<Employee> listEmployers = _database.GetEmployeers();
+
+        Console.WriteLine($"Имя \t Фамилия \t Отчество \t Вакансия \t Дата трудоустройства");
+        foreach (var employee in listEmployers)
+        {
+            Console.WriteLine($"{employee.Name} |\t {employee.Surname} |\t {employee.Patronymic} |\t {employee.JobTitle} |\t {employee.DateStartWorking}");
+        }
     }
 }
