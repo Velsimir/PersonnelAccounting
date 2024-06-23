@@ -12,3 +12,4 @@ C:\Users\ninte\OneDrive\Рабочий стол\Projects\C#\PersonnelAccounting\
 C:\Users\ninte\OneDrive\Рабочий стол\Projects\C#\PersonnelAccounting\PersonnelAccounting\obj\Debug\net8.0\PersonnelAccounting.pdb
 C:\Users\ninte\OneDrive\Рабочий стол\Projects\C#\PersonnelAccounting\PersonnelAccounting\obj\Debug\net8.0\PersonnelAccounting.genruntimeconfig.cache
 C:\Users\ninte\OneDrive\Рабочий стол\Projects\C#\PersonnelAccounting\PersonnelAccounting\obj\Debug\net8.0\ref\PersonnelAccounting.dll
+C:\Users\ninte\OneDrive\Рабочий стол\Projects\C#\PersonnelAccounting\PersonnelAccounting\obj\Debug\net8.0\PersonnelAccounting.sourcelink.json

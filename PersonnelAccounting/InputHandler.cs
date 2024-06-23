@@ -14,7 +14,7 @@ public class InputHandler
     private int _maxMounth = 12;
     private int _minCharForName = 2;
     
-    public string GetUserAnswerForMenuChose()
+    public string GetAnswerForMenuChose()
     {
         _userResponse = Console.ReadLine();
         StandardizeUserInput(ref _userResponse);
@@ -22,68 +22,81 @@ public class InputHandler
         return _userResponse;
     }
 
-    public int GetUserAnswerForDate(Date date)
+    public bool TryGetJobTitle(string jobToitleChose)
     {
-        _isWorking = true;
-        int dateNumber = 1;
+        
+        int temp;
+        int maxEnumValue = Enum.GetValues(typeof(JobTitle)).Cast<int>().Max();
+        int minEnumValue = Enum.GetValues(typeof(JobTitle)).Cast<int>().Min();
 
-        while (_isWorking)
+        if (Int32.TryParse(jobToitleChose, out temp) == true)
         {
-            ShowDateInfo(date);
-            
-            _userResponse = Console.ReadLine();
-            
-            if (Int32.TryParse(_userResponse, out dateNumber))
-            {
-                switch (date)
-                {
-                    case Date.Year:
-                        if (dateNumber > _minYear && dateNumber < DateTime.Now.Year - _ageToStartWork)
-                            _isWorking = false;
-                        else
-                            IncorrectInput();
-                        
-                        break;
-                    
-                    case Date.Mounth:
-                        if (dateNumber >= _minMouth && dateNumber <= _maxMounth)
-                            _isWorking = false;
-                        else
-                            IncorrectInput();
-                        
-                        break;
-                    
-                    case Date.Day:
-                        if (dateNumber >= _minDay && dateNumber <= _maxDay)
-                            _isWorking = false;
-                        else
-                            IncorrectInput();
-                        
-                        break;
-                }
-            }
+            if (temp <= maxEnumValue && temp >= minEnumValue)
+                return true;
             else
-                IncorrectInput();
-        }
+            {
+                IncorrectInput();    
+                return false;
+            }
 
-        return dateNumber;
+        }
+        else
+        {
+            IncorrectInput();
+            return false;
+        }
     }
 
-    public string GetUserAnswerForName()
+    public bool TryGetGender(string userGenderChose)
     {
-        _isWorking = true;
-        
-        while (_isWorking)
-        {
-            _userResponse = Console.ReadLine();
+        int temp;
+        int maxEnumValue = Enum.GetValues(typeof(Gender)).Cast<int>().Max();
+        int minEnumValue = Enum.GetValues(typeof(Gender)).Cast<int>().Min();
 
-            if (_userResponse.Length > _minCharForName)
-                _isWorking = false;
+        if (Int32.TryParse(userGenderChose, out temp) == true)
+        {
+            if (temp <= maxEnumValue && temp >= minEnumValue)
+                return true;
             else
+            {
                 IncorrectInput();
+                return false;
+            }
+
+        }
+        else
+        {
+            IncorrectInput();
+            return false;
+        }
+    }
+
+    public bool TryGetAnswerForDate(string dateString)
+    {
+        string[] dateSplit = dateString.Split('/');
+        int temp;
+        
+        foreach (var date in dateSplit)
+        {
+            if (Int32.TryParse(date, out temp) == false)
+            {
+                IncorrectInput();
+                return false;
+            }
         }
 
-        return _userResponse;
+        return true;
+    }
+
+    public bool TryGetAnswerForName(string userAnser)
+    {
+        if (userAnser.Length > _minCharForName)
+            return true;
+        else
+        {
+            IncorrectInput();
+            return false;
+        }
     }
         
     public void IncorrectInput()
@@ -98,23 +111,5 @@ public class InputHandler
     {
         userInput.ToLower();
         userInput.Trim();
-    }
-
-    private void ShowDateInfo(Date date)
-    {
-        switch (date)
-        {
-            case Date.Year:
-                Console.WriteLine("Введите год: ");
-                break;
-                    
-            case Date.Mounth:
-                Console.WriteLine("Введите месяц: ");
-                break;
-                    
-            case Date.Day:
-                Console.WriteLine("Введите день: ");
-                break;
-        }
     }
 }

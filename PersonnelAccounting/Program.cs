@@ -6,20 +6,13 @@ class Program
 {
     static void Main(string[] args)
     {
-        Database database = new Database();
-        MainMenu mainMenu = new MainMenu();
+        EmployeeBuilder employeeBuilder = new EmployeeBuilder();
         InputHandler inputHandler = new InputHandler();
+        Database database = new Database();
+        Employee employee = employeeBuilder.Create(inputHandler);
         
-        bool _isWorking = true;
+        Console.WriteLine($"{employee.Name} {employee.Surname} {employee.Gender} {employee.JobTitle}");
         
-        while (_isWorking == true)
-        {
-            mainMenu.ShowMainMenu();
-
-            if (mainMenu.TryChoseNextSelection(inputHandler, inputHandler.GetUserAnswerForMenuChose()) == true)
-            {
-                mainMenu.ShowNextSelection(database, inputHandler, ref _isWorking);
-            }
-        }
+        database.AddNewEmployee(employee);
     }
 }

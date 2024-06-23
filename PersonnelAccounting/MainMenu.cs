@@ -12,12 +12,12 @@ public class MainMenu
     const string FilterEmployees = "filter";
     const string Exit = "exit";
 
-    private string[] _MainSelections;
+    private string[] _selections;
     private string _lastUserInput = null;
 
     public MainMenu()
     {
-        _MainSelections = new[]
+        _selections = new[]
         {
             AddEmployee, EditEmployee, DeleteEmployee, 
             ShowAllEmployees, SearchEmployee, FilterEmployees, Exit
@@ -73,7 +73,7 @@ public class MainMenu
     {
         _lastUserInput = userInput;
         
-        foreach (var selection in _MainSelections)
+        foreach (var selection in _selections)
         {
             if (selection == userInput)
                 return true;
