@@ -1,13 +1,15 @@
-﻿using System.Globalization;
-using System.IO.Pipes;
-
-namespace PersonnelAccounting;
+﻿namespace PersonnelAccounting;
 
 public class EmployeeBuilder
 {
-    private int _employeeID = 1;
+    private InputHandler _inputHandler;
 
-    public Employee Create(InputHandler inputHandler)
+    public EmployeeBuilder(InputHandler inputHandler)
+    {
+        _inputHandler = inputHandler;
+    }
+
+    public Employee Create()
     {
         DateTime dateOfBirth;
         DateTime dateStartWorking;
@@ -19,17 +21,16 @@ public class EmployeeBuilder
         string phone;
         string email;
         
-        SetFullName(inputHandler, out name, out surname, out patronymic);
-        SetDateOfBirth(inputHandler, out dateOfBirth);
+        SetFullName(out name, out surname, out patronymic);
+        SetDateOfBirth(out dateOfBirth);
         SetDateOfStartWorking(out dateStartWorking);
-        GetGender(inputHandler, out gender);
-        GetJobTitle(inputHandler, out jobTitle);
+        GetGender(out gender);
+        GetJobTitle(out jobTitle);
         GetPhone(out phone);
         GetEmail(out email);
         
-        Employee employee = new Employee(_employeeID, dateOfBirth, dateStartWorking, gender, jobTitle, phone, 
+        Employee employee = new Employee(dateOfBirth, dateStartWorking, gender, jobTitle, phone, 
             email, name, surname, patronymic);
-        _employeeID++;
 
         return employee;
     }
@@ -47,8 +48,8 @@ public class EmployeeBuilder
 
         phone = Console.ReadLine();
     }
-
-    private void GetJobTitle(InputHandler inputHandler, out JobTitle jobTitle)
+    
+    private void GetJobTitle(out JobTitle jobTitle)
     {
         string answer;
         int jobTitleValue = 0;
@@ -65,7 +66,7 @@ public class EmployeeBuilder
             
             answer = Console.ReadLine();
 
-            if (inputHandler.TryGetJobTitle(answer) == true)
+            if (_inputHandler.TryGetJobTitle(answer) == true)
             {
                 jobTitleValue = Convert.ToInt32(answer);
                 isWorking = false;
@@ -75,7 +76,7 @@ public class EmployeeBuilder
         jobTitle = (JobTitle)jobTitleValue;
     }
 
-    private void GetGender(InputHandler inputHandler, out Gender gender)
+    private void GetGender(out Gender gender)
     {
         string answer;
         int genderValue = 0;
@@ -92,7 +93,7 @@ public class EmployeeBuilder
             
             answer = Console.ReadLine();
 
-            if (inputHandler.TryGetGender(answer) == true)
+            if (_inputHandler.TryGetGender(answer) == true)
             {
                 genderValue = Convert.ToInt32(answer);
                 isWorking = false;
@@ -102,14 +103,14 @@ public class EmployeeBuilder
         gender = (Gender)genderValue;
     }
 
-    private void SetFullName(InputHandler inputHandler, out string name, out string surname, out string patronymic)
+    private void SetFullName(out string name, out string surname, out string patronymic)
     {
-        name = GetName(inputHandler,  "Введите имя сотрудника: ");
-        surname = GetName(inputHandler, "Введите фамилию: ");
-        patronymic = GetName(inputHandler, "Введите отчество: ");
+        name = GetName("Введите имя сотрудника: ");
+        surname = GetName("Введите фамилию: ");
+        patronymic = GetName("Введите отчество: ");
     }
 
-    private string GetName(InputHandler inputHandler, string question)
+    private string GetName(string question)
     {
         bool isWorking = true;
         string answer = null;
@@ -119,14 +120,14 @@ public class EmployeeBuilder
             Console.Write(question);
             answer = Console.ReadLine();
             
-            if (inputHandler.TryGetAnswerForName(answer) == true)
+            if (_inputHandler.TryGetName(answer) == true)
                 isWorking = false;
         }
 
         return answer;
     }
 
-    private void SetDateOfBirth(InputHandler inputHandler, out DateTime dateOfBirth)
+    private void SetDateOfBirth(out DateTime dateOfBirth)
     {
         bool isWorking = true;
         string dateSting;
@@ -137,7 +138,7 @@ public class EmployeeBuilder
             Console.WriteLine("Введите дату рождения сотрудника в формате день/месяц/год");
             dateSting = Console.ReadLine();
             
-            if (inputHandler.TryGetAnswerForDate(dateSting) == true)
+            if (_inputHandler.TryGetBirthDate(dateSting) == true)
             {
                 dateOfBirth = SetBirthDate(dateSting);
                 isWorking = false;

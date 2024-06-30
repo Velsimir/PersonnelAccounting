@@ -14,17 +14,8 @@ public class InputHandler
     private int _maxMounth = 12;
     private int _minCharForName = 2;
     
-    public string GetAnswerForMenuChose()
-    {
-        _userResponse = Console.ReadLine();
-        StandardizeUserInput(ref _userResponse);
-
-        return _userResponse;
-    }
-
     public bool TryGetJobTitle(string jobToitleChose)
     {
-        
         int temp;
         int maxEnumValue = Enum.GetValues(typeof(JobTitle)).Cast<int>().Max();
         int minEnumValue = Enum.GetValues(typeof(JobTitle)).Cast<int>().Min();
@@ -38,7 +29,6 @@ public class InputHandler
                 IncorrectInput();    
                 return false;
             }
-
         }
         else
         {
@@ -47,13 +37,13 @@ public class InputHandler
         }
     }
 
-    public bool TryGetGender(string userGenderChose)
+    public bool TryGetGender(string genderChose)
     {
         int temp;
         int maxEnumValue = Enum.GetValues(typeof(Gender)).Cast<int>().Max();
         int minEnumValue = Enum.GetValues(typeof(Gender)).Cast<int>().Min();
 
-        if (Int32.TryParse(userGenderChose, out temp) == true)
+        if (Int32.TryParse(genderChose, out temp) == true)
         {
             if (temp <= maxEnumValue && temp >= minEnumValue)
                 return true;
@@ -62,7 +52,6 @@ public class InputHandler
                 IncorrectInput();
                 return false;
             }
-
         }
         else
         {
@@ -71,7 +60,18 @@ public class InputHandler
         }
     }
 
-    public bool TryGetAnswerForDate(string dateString)
+    public bool TryGetIDEmployee(string userInput, int maxIndex, ref int index)
+    {
+        if (Int32.TryParse(userInput, out index) && index <= maxIndex)
+        {
+            index = Convert.ToInt32(userInput) - 1;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public bool TryGetBirthDate(string dateString)
     {
         string[] dateSplit = dateString.Split('/');
         int temp;
@@ -88,7 +88,7 @@ public class InputHandler
         return true;
     }
 
-    public bool TryGetAnswerForName(string userAnser)
+    public bool TryGetName(string userAnser)
     {
         if (userAnser.Length > _minCharForName)
             return true;
@@ -98,13 +98,25 @@ public class InputHandler
             return false;
         }
     }
+    
+    public bool TryChoseNextMenu(List<string> selections, string userResponse)
+    {
+        StandardizeUserInput(ref userResponse);
+        
+        foreach (var selection in selections)
+        {
+            if (selection == userResponse)
+                return true;
+        }
+        
+        IncorrectInput();
+        return false;
+    }
         
     public void IncorrectInput()
     {
         Console.WriteLine("Введена не корректная комманда" +
                           "Нажмите любую клавишу для продолжения...");
-        Console.ReadLine();
-        Console.Clear();
     }
 
     private void StandardizeUserInput(ref string userInput)

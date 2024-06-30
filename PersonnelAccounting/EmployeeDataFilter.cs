@@ -1,6 +1,6 @@
 ﻿namespace PersonnelAccounting;
 
-public class Filter
+public class EmployeeDataFilter
 {
     
 }

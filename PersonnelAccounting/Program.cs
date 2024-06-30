@@ -6,13 +6,17 @@ class Program
 {
     static void Main(string[] args)
     {
-        EmployeeBuilder employeeBuilder = new EmployeeBuilder();
-        InputHandler inputHandler = new InputHandler();
         Database database = new Database();
-        Employee employee = employeeBuilder.Create(inputHandler);
-        
-        Console.WriteLine($"{employee.Name} {employee.Surname} {employee.Gender} {employee.JobTitle}");
-        
-        database.AddNewEmployee(employee);
+        InputHandler inputHandler = new InputHandler();
+        EmployeeBuilder employeeBuilder = new EmployeeBuilder(inputHandler);
+        Menu menu = new Menu(database, inputHandler, employeeBuilder);
+
+        bool isWorking = true;
+
+        while (isWorking)
+        {
+            menu.ShowMain();
+            menu.ShowNextSelection(ref isWorking);
+        }
     }
 }

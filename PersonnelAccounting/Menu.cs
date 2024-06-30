@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
+﻿namespace PersonnelAccounting;
 
-namespace PersonnelAccounting;
-
-public class MainMenu
+public class Menu
 {
     const string AddEmployee = "add";
     const string EditEmployee = "edit";
@@ -12,12 +10,12 @@ public class MainMenu
     const string FilterEmployees = "filter";
     const string Exit = "exit";
 
-    private List<string> _selections;
+    private List<string> _selections = new List<string>();
     private Database _database;
     private InputHandler _inputHandler;
     private EmployeeBuilder _employeeBuilder;
 
-    public MainMenu(Database database, InputHandler inputHandler, EmployeeBuilder employeeBuilder)
+    public Menu(Database database, InputHandler inputHandler, EmployeeBuilder employeeBuilder)
     {
         _selections.Add(AddEmployee);
         _selections.Add(EditEmployee);
@@ -48,64 +46,103 @@ public class MainMenu
     {
         Console.WriteLine("Введите команду:");
         string userInput = Console.ReadLine();
-
-        if (TryChoseNextSelection(userInput))
-        {
-            
-        }
         
-        switch (userInput)
+        if (_inputHandler.TryChoseNextMenu(_selections, userInput) == true)
         {
-            case AddEmployee:
-                _database.AddNewEmployee(_employeeBuilder.Create());
-                break;
+            switch (userInput)
+            {
+                case AddEmployee:
+                    _database.AddNewEmployee(_employeeBuilder.Create());
+                    break;
             
-            case EditEmployee: 
-                break;
+                case EditEmployee: 
+                    break;
             
-            case DeleteEmployee:
-                break;
+                case DeleteEmployee:
+                    DeleteEmployeeByID();
+                    break;
             
-            case ShowAllEmployees:
-                ShowEmployers();
-                break;
+                case ShowAllEmployees:
+                    ShowEmployers();
+                    break;
             
-            case SearchEmployee:
-                break;
+                case SearchEmployee:
+                    ShowEmployeeInfo();
+                    break;
             
-            case FilterEmployees:
-                break;
+                case FilterEmployees:
+                    break;
             
-            case Exit:
-                isWorking = false;
-                break;
+                case Exit:
+                    isWorking = false;
+                    break;
             
-            default:
-                _inputHandler.IncorrectInput();
-                break;
+                default:
+                    _inputHandler.IncorrectInput();
+                    break;
+            }
         }
     }
 
-    public bool TryChoseNextSelection(string userInput)
+    private void DeleteEmployeeByID()
     {
-        foreach (var selection in _selections)
-        {
-            if (selection == userInput)
-                return true;
-        }
+        Employee employee;
         
-        _inputHandler.IncorrectInput();
-        return false;
+        int index = SearchEmployeeByID();
+
+        employee = _database.GetEmployee(index);
+        
+        _database.DeleteEmployee(employee);
+    }
+    
+    private void ShowEmployeeInfo()
+    {
+        Employee employee;
+        int correctIDforUser;
+        int employeeID = SearchEmployeeByID();
+
+        employee = _database.GetEmployee(employeeID);
+        correctIDforUser = employeeID++;        
+        
+        Console.WriteLine($"ID: {correctIDforUser,-5} | Пол: {employee.Gender,-15} | Имя: {employee.Name,-15} | Фамилия: {employee.Surname,-15} | Отчество: {employee.Patronymic,-15} " +
+                          $"| Дата рождения: {employee.DateOfBirth,-20} | Вакансия: {employee.JobTitle,-20} | Дата трудоустройства: {employee.DateStartWorking,-20} | Почта: {employee.Email,-20} " +
+                          $"| Телефон: {employee.Phone,-20}");
+    }
+
+    private int SearchEmployeeByID()
+    {
+        string userInput;
+        int index = 0;
+        bool isWorking = true;
+        
+        while (isWorking)
+        {
+            ShowEmployers();
+
+            Console.WriteLine("Введите ID пользователя:");
+            userInput = Console.ReadLine();
+
+            if (_inputHandler.TryGetIDEmployee(userInput, _database.GetEmployeers().Count, ref index))
+                isWorking = false;
+            else
+                _inputHandler.IncorrectInput();
+        }
+
+        return index;
     }
 
     private void ShowEmployers()
     {
+        int employeeID = 1;
         List<Employee> listEmployers = _database.GetEmployeers();
 
-        Console.WriteLine($"Имя \t Фамилия \t Отчество \t Вакансия \t Дата трудоустройства");
+        Console.WriteLine($"{"ID",-5} | {"Имя",-15} | {"Фамилия",-15} | {"Отчество",-15} | {"Вакансия",-20} | {"Дата трудоустройства",-20}");
+        Console.WriteLine(new string('-', 90));
+
         foreach (var employee in listEmployers)
         {
-            Console.WriteLine($"{employee.Name} |\t {employee.Surname} |\t {employee.Patronymic} |\t {employee.JobTitle} |\t {employee.DateStartWorking}");
+            Console.WriteLine($"{employeeID,-5} | {employee.Name,-15} | {employee.Surname,-15} | {employee.Patronymic,-15} | {employee.JobTitle,-20} | {employee.DateStartWorking,-20}");
+            employeeID++;
         }
     }
 }
